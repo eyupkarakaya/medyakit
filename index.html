@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eyüp Karakaya</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Koyu Tema (Varsayılan) */
+            --bg-main: #141414;
+            --bg-card: #1e1e1e;
+            --text-main: #f8fafc;
+            --text-muted: #9ca3af;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --bg-soft: rgba(255, 255, 255, 0.02);
+            --bg-hover: rgba(255, 255, 255, 0.05);
+            
+            /* Marka Renkleri */
+            --yt-color: #ff0033;
+            --ig-color: #d946ef;
+            --tt-color: #ff0050;
+            --fb-color: #1877f2;
+            --in-color: #0a66c2;
+            --xb-color: #9b1c73;
+            --hz-color: #f59e0b;
+        }
+
+        /* Açık Tema (Göz yormayan soft renkler) */
+        body.light-theme {
+            --bg-main: #f1f5f9;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: rgba(0, 0, 0, 0.08);
+            --bg-soft: rgba(0, 0, 0, 0.03);
+            --bg-hover: rgba(0, 0, 0, 0.06);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-user-select: none; user-select: none; }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            overflow: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .dashboard {
+            width: 100%;
+            max-width: 1200px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* --- 1. YENİ PROFİL DÜZENİ --- */
+        .profile-row {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .avatar-box {
+            width: 65px; height: 65px; flex-shrink: 0;
+        }
+
+        .avatar {
+            width: 100%; height: 100%; object-fit: cover;
+            border-radius: 50%; 
+            border: 2px solid var(--border-color); 
+        }
+
+        .profile-info {
+            display: flex; flex-direction: column; justify-content: center;
+            flex-grow: 1; min-width: 0;
+        }
+
+        .p-top-line {
+            display: flex; align-items: center; gap: 10px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+
+        .p-name { font-size: 1.15rem; font-weight: 800; color: var(--text-main); }
+        .p-divider-text { color: var(--border-color); font-weight: 300; }
+        .p-title { font-size: 0.85rem; color: #f59e0b; font-weight: 600; }
+
+        .p-divider-line {
+            width: 100%; height: 1px; background: var(--border-color); margin: 6px 0;
+        }
+
+        .p-bio {
+            font-size: 0.8rem; color: var(--text-muted);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+
+        /* YENİ SWITCH (KAYDIRMALI) TASARIMI VE DİK ÇİZGİ */
+        .profile-divider-vertical {
+            width: 1px;
+            height: 60px;
+            background: var(--border-color);
+            margin: 0 10px;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .action-toggles {
+            display: flex; 
+            flex-direction: column; 
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 5px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 30px;
+            background: var(--bg-soft);
+            transition: all 0.3s ease;
+            width: 110px; /* Hizalamayı sağlayan sabit genişlik */
+            cursor: pointer;
+        }
+        
+        .toggle-container:hover {
+            border-color: var(--hz-color);
+            background: var(--bg-hover);
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.1);
+        }
+
+        .t-icon-left, .t-icon-right {
+            font-size: 0.75rem; 
+            font-weight: 800; 
+            color: var(--text-muted); 
+            transition: 0.3s;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            width: 16px;
+        }
+
+        /* Aktif duruma göre renk değiştirme kuralları */
+        .theme-is-dark .theme-l { color: var(--text-main); }
+        .theme-is-light .theme-r { color: var(--hz-color); }
+        .lang-is-tr .lang-l { color: var(--text-main); }
+        .lang-is-en .lang-r { color: var(--hz-color); }
+
+        .switch {
+            position: relative; display: inline-block; width: 34px; height: 18px; flex-shrink: 0; margin: 0;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(255,255,255,0.08); border-radius: 20px; transition: .3s;
+        }
+        body.light-theme .slider { background-color: rgba(0,0,0,0.08); }
+        
+        .slider:before {
+            position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px;
+            background-color: var(--text-muted); border-radius: 50%; transition: .3s;
+        }
+        input:checked + .slider { background-color: rgba(245, 158, 11, 0.2); }
+        input:checked + .slider:before { transform: translateX(16px); background-color: var(--hz-color); }
+        
+        /* Dark modda sol aktifken beyaz nokta şıklığı */
+        .theme-is-dark #theme-switch + .slider:before,
+        .lang-is-tr #lang-switch + .slider:before { background-color: var(--text-main); }
+
+        /* --- 2. PLATFORM SEKMELERİ --- */
+        .tabs-row {
+            display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap; 
+            background: var(--bg-soft); padding: 8px 12px;
+            border-radius: 20px; border: 1px solid var(--border-color);
+            flex-shrink: 0; width: 100%; transition: all 0.3s ease;
+        }
+
+        .tab-btn {
+            background: transparent; color: var(--text-muted); border: none;
+            padding: 8px 18px; border-radius: 30px; cursor: pointer;
+            font-size: 0.8rem; font-weight: 600; transition: 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            line-height: 1; white-space: nowrap;
+        }
+
+        .tab-btn i { font-size: 0.95rem; display: flex; align-items: center; justify-content: center; width: 18px; }
+        .tab-btn span { display: inline-flex; align-items: center; margin-top: 1px; }
+        .tab-btn.active { color: #fff; }
+        .tab-btn:hover { color: #fff; background: var(--bg-hover); }
+        body.light-theme .tab-btn:hover { color: var(--text-main); }
+        body.light-theme .tab-btn.active { color: #fff; }
+
+        /* --- 3. DİNAMİK İÇERİK ALANI --- */
+        .content-area {
+            flex-grow: 1; display: flex; flex-direction: column; gap: 15px; min-height: 0; animation: fadeIn 0.3s ease;
+        }
+
+        .platform-head { display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        .platform-head h2 { font-size: 1.3rem; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+        .btn-profile-link {
+            background: transparent; color: var(--text-main); border: 1px solid var(--border-color);
+            padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 600;
+            text-decoration: none; display: flex; align-items: center; gap: 6px; transition: 0.2s;
+        }
+        .btn-profile-link:hover { 
+            background: var(--current-platform-color, var(--bg-hover)); 
+            border-color: var(--current-platform-color, var(--border-color)); color: #fff;
+        }
+
+        /* Üst İstatistikler */
+        .top-stats { display: grid; gap: 15px; flex-shrink: 0; }
+        .stat-card {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 15px; text-align: center;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            height: 140px; transition: all 0.3s ease; 
+        }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px -5px var(--current-platform-color); }
+        .stat-icon { font-size: 1.8rem; margin-bottom: 8px; }
+        .stat-val { font-size: 2.2rem; font-weight: 800; line-height: 1.1; display: block; margin-bottom: 4px; }
+        .stat-lbl { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
+
+        /* Alt Analitik */
+        .bottom-analytics { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; flex-grow: 1; min-height: 0; }
+        .analytic-box {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 20px; display: flex; flex-direction: column; overflow: hidden; min-height: 0; transition: all 0.3s ease;
+        }
+        .analytic-box h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+        /* Barlar */
+        .bars-container { display: flex; flex-direction: column; justify-content: flex-start; gap: 8px; overflow: hidden; padding-right: 5px; flex-grow: 1; min-height: 0; padding-top: 5px; }
+        .bar-row { display: flex; align-items: center; gap: 10px; font-size: 0.75rem; font-weight: 500; }
+        .bar-label { width: 80px; white-space: nowrap; }
+        .bar-track { flex-grow: 1; height: 6px; background: var(--bg-hover); border-radius: 4px; overflow: hidden; }
+        .bar-fill { height: 100%; transition: width 1s ease-out; }
+        .bar-val { width: 45px; text-align: right; font-weight: 700; }
+        .bar-divider { height: 1px; background: var(--border-color); margin: 5px 0; flex-shrink: 0; }
+
+        /* Listeler */
+        .list-container { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; padding-right: 5px; flex-grow: 1; min-height: 0; }
+        .list-row {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--bg-soft); padding: 8px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 500;
+        }
+        .list-rank {
+            width: 22px; height: 22px; border-radius: 4px; color: #fff;
+            display: inline-flex; justify-content: center; align-items: center;
+            font-size: 0.7rem; font-weight: 800; margin-right: 10px;
+        }
+
+        /* --- HİZMETLER VE FİYAT --- */
+        .services-layout { display: flex; flex-direction: column; justify-content: flex-start; align-items: center; gap: 15px; height: 100%; flex-grow: 1; padding-top: 5px; }
+        .services-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; width: 100%; flex-shrink: 0; }
+        .service-card {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 25px 20px; display: flex; flex-direction: column;
+            align-items: flex-start; text-align: left; justify-content: flex-start; 
+            transition: all 0.3s ease; overflow-y: auto; height: 100%;
+        }
+        .service-card:hover { border-color: var(--hz-color); transform: translateY(-5px); box-shadow: 0 10px 25px -5px var(--hz-color); }
+        .service-card h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 8px; line-height: 1.4; color: var(--text-main); min-height: 50px; display: flex; align-items: flex-start; }
+        .service-card .s-time { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 20px; display: flex; align-items: center; justify-content: flex-start; gap: 6px; }
+        .service-card .s-price { font-size: 2rem; font-weight: 900; color: var(--hz-color); margin-bottom: 15px; letter-spacing: -0.5px; min-height: 38px; display: flex; align-items: center; }
+        .service-card .s-desc { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
+
+        /* İletişim & Kopyala Kutusu */
+        .contact-action-box {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 20px; display: flex; justify-content: space-between; align-items: center;
+            flex-shrink: 0; width: 100%; transition: all 0.3s ease;
+        }
+        .contact-info h4 { font-size: 1.1rem; font-weight: 800; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+        .contact-info p { font-size: 0.8rem; color: var(--text-muted); }
+        .copy-wrapper { display: flex; align-items: center; gap: 10px; background: var(--bg-soft); padding: 8px 15px; border-radius: 30px; border: 1px solid var(--border-color); }
+        .copy-email-text { font-size: 0.9rem; font-weight: 600; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .btn-copy-action {
+            background: #ff0033; color: #fff; border: none; padding: 8px 16px; border-radius: 20px;
+            font-size: 0.75rem; font-weight: 800; cursor: pointer; transition: 0.2s; 
+            white-space: nowrap; flex-shrink: 0; min-width: 110px; text-align: center;
+        }
+
+        /* Footer */
+        .copyright-footer { text-align: left; font-size: 0.75rem; color: var(--text-muted); flex-shrink: 0; padding-left: 10px; font-weight: 500; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--bg-hover); border-radius: 10px; }
+
+        /* RESPONSIVE (MOBİL VE TABLET UYUMU) */
+        @media (max-width: 1024px) { .services-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 850px) {
+            body { height: auto; min-height: 100vh; overflow-y: auto; overflow-x: hidden; padding: 10px; }
+            .dashboard { height: auto; }
+            .content-area { height: auto; overflow: visible; }
+            .profile-row { flex-direction: column; text-align: center; gap: 15px; padding: 20px 15px; position: relative; }
+            .p-top-line { flex-wrap: wrap; justify-content: center; white-space: normal; line-height: 1.4; }
+            .p-divider-text { display: none; } 
+            .p-bio { white-space: normal; line-height: 1.4; text-align: center; }
+            
+            /* Mobilde düzenin bozulmaması için dikey çizgiyi gizler ve butonları yatay hizalar */
+            .profile-divider-vertical { display: none; }
+            .action-toggles { 
+                flex-direction: row; 
+                justify-content: center; 
+                width: 100%; 
+                margin-top: 5px; 
+            }
+            
+            .contact-action-box { flex-direction: column; text-align: center; gap: 15px; }
+            .copy-wrapper { width: 100%; justify-content: space-between; }
+            .bottom-analytics { grid-template-columns: 1fr; display: flex; flex-direction: column; height: auto !important; }
+            .analytic-box { min-height: auto; overflow: visible; }
+            .bars-container, .list-container, .geo-split { overflow: visible; height: auto; max-height: none; }
+            .service-card { height: auto !important; overflow: visible; } 
+        }
+        @media (max-width: 600px) {
+            .top-stats { grid-template-columns: 1fr !important; } 
+            .services-grid { grid-template-columns: 1fr; }
+            .platform-head { flex-direction: column; gap: 15px; align-items: center; text-align: center; margin-bottom: 10px; }
+            .platform-head h2 { justify-content: center; text-align: center; }
+            .btn-profile-link { width: 100%; justify-content: center; padding: 12px; font-size: 0.85rem; }
+            .tabs-row { border-radius: 12px; gap: 8px; }
+            .tab-btn { flex-grow: 1; padding: 10px; font-size: 0.75rem; border-radius: 8px; }
+            .copy-wrapper { flex-direction: column; border-radius: 15px; padding: 15px; gap: 12px; }
+            .copy-email-text { font-size: 1rem; }
+            .btn-copy-action { width: 100%; padding: 12px; font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body class="dark-theme" oncontextmenu="return false;" ondragstart="return false;" onselectstart="return false;">
+
+    <div class="dashboard">
+        
+        <header class="profile-row">
+            <div class="avatar-box">
+                <img src="profil.jpg" class="avatar" id="main-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Eyup+Karakaya&background=27272a&color=fff'">
+            </div>
+            <div class="profile-info">
+                <div class="p-top-line">
+                    <span class="p-name">Eyüp Karakaya</span>
+                    <span class="p-divider-text">|</span>
+                    <span class="p-title" id="t-prof-title">Donanım & PCB Tasarım Mühendisi | Dijital İçerik Üreticisi</span>
+                </div>
+                <div class="p-divider-line"></div>
+                <div class="p-bio" id="t-prof-bio"><strong><em>Dene, Yap, Öğren</em></strong> mottosuyla işin mantığını aşılıyorum. Karmaşık süreçleri kaliteli içeriklerle öğrenme yolculuğuna dönüştürüyorum.</div>
+            </div>
+            
+            <!-- DİKEY AYRAÇ ÇİZGİSİ -->
+            <div class="profile-divider-vertical"></div>
+
+            <!-- KAYDIRMALI DİL VE TEMA ANAHTARLARI -->
+            <div class="action-toggles">
+                <label class="toggle-container lang-is-tr" id="row-lang">
+                    <span class="t-icon-left lang-l">TR</span>
+                    <div class="switch">
+                        <input type="checkbox" id="lang-switch" onchange="toggleLang()">
+                        <span class="slider"></span>
+                    </div>
+                    <span class="t-icon-right lang-r">EN</span>
+                </label>
+                
+                <label class="toggle-container theme-is-dark" id="row-theme">
+                    <i class="fas fa-moon t-icon-left theme-l"></i>
+                    <div class="switch">
+                        <input type="checkbox" id="theme-switch" onchange="toggleTheme()">
+                        <span class="slider"></span>
+                    </div>
+                    <i class="fas fa-sun t-icon-right theme-r"></i>
+                </label>
+            </div>
+
+        </header>
+
+        <nav class="tabs-row" id="tabs-container"></nav>
+
+        <main class="content-area" id="dynamic-content"></main>
+
+        <footer class="copyright-footer" id="t-footer">
+            <i class="fas fa-copyright"></i> 2026 Eyüp Karakaya - Tüm Hakları Saklıdır.
+        </footer>
+
+    </div>
+
+    <script>
+        // --- DİL YÖNETİMİ (ÇEVİRİ SÖZLÜĞÜ) ---
+        let currentLang = 'tr';
+        
+        const dict = {
+            tr: {
+                profTitle: "Donanım & PCB Tasarım Mühendisi | Dijital İçerik Üreticisi",
+                profBio: "<strong><em>Dene, Yap, Öğren</em></strong> mottosuyla işin mantığını aşılıyorum. Karmaşık süreçleri kaliteli içeriklerle öğrenme yolculuğuna dönüştürüyorum.",
+                footer: "2026 Eyüp Karakaya - Tüm Hakları Saklıdır.",
+                goToProfile: "Profilime Git",
+                statsTitle: "İstatistikleri",
+                ageGender: "Yaş ve Cinsiyet",
+                male: "Erkek", female: "Kadın",
+                topCountries: "Başlıca Ülkeler", topCities: "Başlıca Şehirler",
+                ageSuf: "yaş",
+                servicesTitle: "Standart Hizmetler ve Fiyatlandırma",
+                contactTitle: "Projeniz İçin İletişime Geçin",
+                contactDesc: "Sponsorluk, ürün incelemesi veya özel projeler için detayları benimle paylaşabilirsiniz.",
+                copyBtn: "Kopyalayın", copiedBtn: "Kopyalandı ✓",
+                // İstatistik Label'ları
+                lSubs: "ABONE SAYISI", lViews28: "SON 28 GÜN GÖRÜNTÜLEME",
+                lFollowers: "TAKİPÇİ SAYISI", lMonthlyViews: "AYLIK GÖRÜNTÜLENME",
+                lTotalViews: "İZLENME SAYISI", lConns: "BAĞLANTI SAYISI",
+                lTotalPosts: "TOPLAM GÖNDERİ", lTotalStudents: "TOPLAM ÖĞRENCİ",
+                lCourses: "KURS SAYISI", lRating: "DEĞERLENDİRME",
+                // Ülkeler & Şehirler
+                cTurkey: "Türkiye", cAzer: "Azerbaycan", cIndia: "Hindistan", cGer: "Almanya",
+                cNeth: "Hollanda", cRus: "Rusya", cFra: "Fransa", cUsa: "ABD", cIndo: "Endonezya",
+                cBul: "Bulgaristan", cCyp: "Kıbrıs", cMya: "Myanmar", cTha: "Tayland", cMex: "Meksika",
+                cBra: "Brezilya", cPak: "Pakistan", cCam: "Kamboçya", cBel: "Belçika",
+                cIst: "İstanbul", cAnk: "Ankara", cIzm: "İzmir", cBur: "Bursa", cKon: "Konya", cAnt: "Antalya",
+                // Paketler
+                p1T: "Paket 1: Doğal Entegrasyon", p1Time: "60 - 90 Saniye", p1D: "Videonun doğal akışını bozmadan, ana projenin içine senaryo ile yedirilmiş marka veya hizmet tanıtımı.",
+                p2T: "Paket 2: Proje İçi Entegrasyon", p2Time: "2 - 3 Dakika", p2D: "Sponsorlu ürünün projede aktif olarak kullanıldığı, teknik özelliklerinin gösterildiği detaylı tanıtım.",
+                p3T: "Paket 3: Özel Video (Dedicated)", p3Time: "Tam Odaklı Video", p3D: "Tüm videonun doğrudan marka etrafında şekillendiği, baştan sona ürüne odaklanan proje videosu.",
+                p4T: "Paket 4: Özel Proje & Prototipleme", p4Time: "Mühendislik Çözümleri", p4Price: "Teklif Al", p4D: "Donanım prototipleme, markaya özel PCB tasarımı veya kurumsal workshop gibi butik mühendislik çözümleri.",
+                hizmetTab: "Sponsorluk & Hizmetler"
+            },
+            en: {
+                profTitle: "Hardware & PCB Design Engineer | Digital Content Creator",
+                profBio: "With the <strong><em>Try, Build, Learn</em></strong> motto, I teach the logic behind things. I transform complex processes into high-quality learning journeys.",
+                footer: "2026 Eyüp Karakaya - All Rights Reserved.",
+                goToProfile: "Go to Profile",
+                statsTitle: "Statistics",
+                ageGender: "Age & Gender",
+                male: "Male", female: "Female",
+                topCountries: "Top Countries", topCities: "Top Cities",
+                ageSuf: "yrs",
+                servicesTitle: "Standard Services & Pricing",
+                contactTitle: "Contact For Your Project",
+                contactDesc: "Feel free to share details for sponsorships, product reviews, or custom projects.",
+                copyBtn: "Copy Email", copiedBtn: "Copied ✓",
+                // İstatistik Label'ları
+                lSubs: "SUBSCRIBERS", lViews28: "VIEWS (LAST 28 DAYS)",
+                lFollowers: "FOLLOWERS", lMonthlyViews: "MONTHLY VIEWS",
+                lTotalViews: "TOTAL VIEWS", lConns: "CONNECTIONS",
+                lTotalPosts: "TOTAL POSTS", lTotalStudents: "TOTAL STUDENTS",
+                lCourses: "COURSES", lRating: "RATING",
+                // Ülkeler & Şehirler
+                cTurkey: "Turkey", cAzer: "Azerbaijan", cIndia: "India", cGer: "Germany",
+                cNeth: "Netherlands", cRus: "Russia", cFra: "France", cUsa: "USA", cIndo: "Indonesia",
+                cBul: "Bulgaria", cCyp: "Cyprus", cMya: "Myanmar", cTha: "Thailand", cMex: "Mexico",
+                cBra: "Brazil", cPak: "Pakistan", cCam: "Cambodia", cBel: "Belgium",
+                cIst: "Istanbul", cAnk: "Ankara", cIzm: "Izmir", cBur: "Bursa", cKon: "Konya", cAnt: "Antalya",
+                // Paketler
+                p1T: "Package 1: Organic Integration", p1Time: "60 - 90 Seconds", p1D: "Brand or service integration seamlessly scripted into the main project without disrupting the natural flow.",
+                p2T: "Package 2: In-Project Integration", p2Time: "2 - 3 Minutes", p2D: "A detailed showcase where the sponsored product is actively used in the project, demonstrating its features.",
+                p3T: "Package 3: Dedicated Video", p3Time: "Fully Focused Video", p3D: "A complete project video shaped entirely around the brand, focusing on the product from start to finish.",
+                p4T: "Package 4: Custom Project & Prototyping", p4Time: "Engineering Solutions", p4Price: "Get Quote", p4D: "Boutique engineering solutions such as hardware prototyping, brand-specific PCB design, or workshops.",
+                hizmetTab: "Sponsorship & Services"
+            }
+        };
+
+        function getPlatformsData() {
+            const d = dict[currentLang];
+            return {
+                youtube: {
+                    id: 'youtube', name: 'YouTube', icon: 'fab fa-youtube', color: 'var(--yt-color)', url: 'https://youtube.com/@eyupkarakaya',
+                    stats: [{ l: d.lSubs, v: 9900, s: '+', i: 'fas fa-users' }, { l: d.lViews28, v: 100000, s: '+', i: 'fas fa-play' }],
+                    demo: {
+                        gender: [{ l: d.male, p: 93.2 }, { l: d.female, p: 6.8 }],
+                        age: [{ l: `13-17 ${d.ageSuf}`, p: 1.8 }, { l: `18-24 ${d.ageSuf}`, p: 14.7 }, { l: `25-34 ${d.ageSuf}`, p: 29.5 }, { l: `35-44 ${d.ageSuf}`, p: 24.5 }, { l: `45-54 ${d.ageSuf}`, p: 16.7 }, { l: `55-64 ${d.ageSuf}`, p: 8.9 }, { l: `65+ ${d.ageSuf}`, p: 4.0 }],
+                        geoLists: [{ title: d.topCountries, icon: 'fas fa-globe', items: [{ n: d.cTurkey, p: '%86,6' }, { n: d.cAzer, p: '%2,7' }, { n: d.cIndia, p: '%1,8' }, { n: d.cGer, p: '%1,6' }, { n: d.cNeth, p: '%0,3' }, { n: d.cRus, p: '%0,3' }, { n: d.cFra, p: '%0,2' }, { n: d.cUsa, p: '%0,2' }, { n: d.cIndo, p: '%0,2' }, { n: d.cBul, p: '%0,2' }] }]
+                    }
+                },
+                instagram: {
+                    id: 'instagram', name: 'Instagram', icon: 'fab fa-instagram', color: 'var(--ig-color)', url: 'https://www.instagram.com/webteknomobi/',
+                    stats: [{ l: d.lFollowers, v: 68000, s: '+', i: 'fas fa-user-plus' }, { l: d.lMonthlyViews, v: 150000, s: '+', i: 'fas fa-eye' }],
+                    demo: {
+                        gender: [{ l: d.male, p: 95.8 }, { l: d.female, p: 4.2 }],
+                        age: [{ l: `25-34 ${d.ageSuf}`, p: 31.5 }, { l: `35-44 ${d.ageSuf}`, p: 22.8 }, { l: `18-24 ${d.ageSuf}`, p: 18.0 }, { l: `45-54 ${d.ageSuf}`, p: 15.0 }],
+                        geoLists: [
+                            { title: d.topCountries, icon: 'fas fa-globe', items: [{ n: d.cTurkey, p: '%95,8' }, { n: d.cAzer, p: '%1,0' }, { n: d.cGer, p: '%0,8' }, { n: d.cCyp, p: '%0,3' }] },
+                            { title: d.topCities, icon: 'fas fa-city', items: [{ n: d.cIst, p: '%16,1' }, { n: d.cAnk, p: '%7,3' }, { n: d.cIzm, p: '%5,0' }, { n: d.cBur, p: '%3,4' }] }
+                        ]
+                    }
+                },
+                tiktok: {
+                    id: 'tiktok', name: 'TikTok', icon: 'fab fa-tiktok', color: 'var(--tt-color)', url: 'https://tiktok.com/@webteknomobi',
+                    stats: [{ l: d.lFollowers, v: 28000, s: '+', i: 'fab fa-tiktok' }, { l: d.lTotalViews, v: 63000, s: '+', i: 'fas fa-play-circle' }],
+                    demo: {
+                        gender: [{ l: d.male, p: 85.0 }, { l: d.female, p: 15.0 }],
+                        age: [{ l: `18-24 ${d.ageSuf}`, p: 13.8 }, { l: `25-34 ${d.ageSuf}`, p: 34.6 }, { l: `35-44 ${d.ageSuf}`, p: 29.2 }, { l: `45-54 ${d.ageSuf}`, p: 15.2 }, { l: `55+ ${d.ageSuf}`, p: 7.2 }],
+                        geoLists: [{ title: d.topCountries, icon: 'fas fa-globe', items: [{ n: d.cTurkey, p: '%22,0' }, { n: d.cMya, p: '%4,8' }, { n: d.cTha, p: '%3,3' }, { n: d.cUsa, p: '%2,3' }, { n: d.cMex, p: '%2,2' }, { n: d.cIndo, p: '%2,1' }, { n: d.cAzer, p: '%1,8' }, { n: d.cBra, p: '%1,8' }, { n: d.cPak, p: '%1,7' }, { n: d.cCam, p: '%1,5' }] }]
+                    }
+                },
+                facebook: {
+                    id: 'facebook', name: 'Facebook', icon: 'fab fa-facebook-f', color: 'var(--fb-color)', url: 'https://www.facebook.com/profile.php?id=61552729612148&locale=tr_TR',
+                    stats: [{ l: d.lFollowers, v: 15000, s: '+', i: 'fas fa-users' }, { l: d.lMonthlyViews, v: 50000, s: '+', i: 'fas fa-chart-line' }],
+                    demo: {
+                        gender: [{ l: d.male, p: 95.0 }, { l: d.female, p: 5.0 }],
+                        age: [{ l: `18-24 ${d.ageSuf}`, p: 1.7 }, { l: `25-34 ${d.ageSuf}`, p: 16.5 }, { l: `35-44 ${d.ageSuf}`, p: 33.4 }, { l: `45-54 ${d.ageSuf}`, p: 27.9 }, { l: `55-64 ${d.ageSuf}`, p: 14.2 }, { l: `65+ ${d.ageSuf}`, p: 6.3 }],
+                        geoLists: [
+                            { title: d.topCountries, icon: 'fas fa-globe', items: [{ n: d.cTurkey, p: '%94,2' }, { n: d.cGer, p: '%1,9' }, { n: d.cAzer, p: '%1,2' }, { n: d.cBul, p: '%0,5' }, { n: d.cBel, p: '%0,4' }, { n: d.cNeth, p: '%0,4' }] },
+                            { title: d.topCities, icon: 'fas fa-city', items: [{ n: d.cIst, p: '%42,3' }, { n: d.cAnk, p: '%13,5' }, { n: d.cIzm, p: '%12,0' }, { n: d.cBur, p: '%8,1' }, { n: d.cKon, p: '%5,0' }, { n: d.cAnt, p: '%4,6' }] }
+                        ]
+                    }
+                },
+                linkedin: {
+                    id: 'linkedin', name: 'LinkedIn', icon: 'fab fa-linkedin-in', color: 'var(--in-color)', url: 'https://www.linkedin.com/in/eypkrky1326',
+                    stats: [{ l: d.lConns, v: 9000, s: '+', i: 'fas fa-link' }, { l: d.lMonthlyViews, v: 10000, s: '+', i: 'fas fa-eye' }, { l: d.lTotalPosts, v: 280, s: '', i: 'fas fa-file-alt' }]
+                },
+                xbowtie: {
+                    id: 'xbowtie', name: 'xBowtie', icon: 'fas fa-graduation-cap', color: 'var(--xb-color)', url: 'https://xbowtie.com/egitmen/Eysevka',
+                    stats: [{ l: d.lTotalStudents, v: 2000, s: '+', i: 'fas fa-user-graduate' }, { l: d.lCourses, v: 8, s: '', i: 'fas fa-video' }, { l: d.lRating, v: 4.2, s: '/5', i: 'fas fa-star' }]
+                },
+                hizmetler: {
+                    id: 'hizmetler', name: d.hizmetTab, icon: 'fas fa-handshake', color: 'var(--hz-color)',
+                    pkgs: [
+                        { t: d.p1T, time: d.p1Time, p: '$100 - $250', d: d.p1D },
+                        { t: d.p2T, time: d.p2Time, p: '$300 - $500', d: d.p2D },
+                        { t: d.p3T, time: d.p3Time, p: '$600 - $1000', d: d.p3D },
+                        { t: d.p4T, time: d.p4Time, p: d.p4Price, d: d.p4D }
+                    ]
+                }
+            };
+        }
+
+        const tabsContainer = document.getElementById('tabs-container');
+        const dynamicContent = document.getElementById('dynamic-content');
+        let currentIntervals = [];
+        let currentTabId = 'youtube'; 
+
+        function toggleTheme() {
+            const body = document.body;
+            const isLight = document.getElementById('theme-switch').checked;
+            const rowTheme = document.getElementById('row-theme');
+
+            if (isLight) {
+                body.classList.add('light-theme');
+                rowTheme.classList.remove('theme-is-dark');
+                rowTheme.classList.add('theme-is-light');
+            } else {
+                body.classList.remove('light-theme');
+                rowTheme.classList.add('theme-is-dark');
+                rowTheme.classList.remove('theme-is-light');
+            }
+        }
+
+        function toggleLang() {
+            const isEn = document.getElementById('lang-switch').checked;
+            const rowLang = document.getElementById('row-lang');
+
+            if (isEn) {
+                currentLang = 'en';
+                rowLang.classList.remove('lang-is-tr');
+                rowLang.classList.add('lang-is-en');
+            } else {
+                currentLang = 'tr';
+                rowLang.classList.add('lang-is-tr');
+                rowLang.classList.remove('lang-is-en');
+            }
+            updateStaticTexts();
+            initTabs(); 
+        }
+
+        function updateStaticTexts() {
+            const d = dict[currentLang];
+            document.getElementById('t-prof-title').innerText = d.profTitle;
+            document.getElementById('t-prof-bio').innerHTML = d.profBio;
+            document.getElementById('t-footer').innerHTML = `<i class="fas fa-copyright"></i> ${d.footer}`;
+        }
+
+        function initTabs() {
+            tabsContainer.innerHTML = ''; 
+            const pData = getPlatformsData();
+            
+            Object.values(pData).forEach((p, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `tab-btn ${p.id === currentTabId ? 'active' : ''}`;
+                
+                if(p.id === 'hizmetler') {
+                    btn.innerHTML = `<i class="${p.icon}" style="color:${p.color}"></i> <span style="color:${p.color}">${p.name}</span>`;
+                } else {
+                    btn.innerHTML = `<i class="${p.icon}"></i> <span>${p.name}</span>`;
+                }
+                btn.onclick = () => selectPlatform(p.id, btn);
+                tabsContainer.appendChild(btn);
+            });
+            const activeBtn = Array.from(tabsContainer.children).find(b => b.className.includes('active')) || tabsContainer.firstChild;
+            selectPlatform(currentTabId, activeBtn);
+        }
+
+        function selectPlatform(pid, btn) {
+            currentTabId = pid;
+            const pData = getPlatformsData();
+            
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.classList.remove('active');
+                b.style.background = 'transparent';
+                if(b.innerText.includes(dict[currentLang].hizmetTab)) {
+                    b.querySelector('span').style.color = pData['hizmetler'].color;
+                    b.querySelector('i').style.color = pData['hizmetler'].color;
+                } else {
+                    b.style.color = 'var(--text-muted)';
+                }
+            });
+
+            if(btn) {
+                btn.classList.add('active');
+                if(pid === 'hizmetler') {
+                    btn.style.background = pData['hizmetler'].color;
+                    btn.querySelector('span').style.color = '#fff';
+                    btn.querySelector('i').style.color = '#fff';
+                } else {
+                    btn.style.background = pData[pid].color;
+                    btn.style.color = '#fff';
+                }
+            }
+
+            const data = pData[pid];
+            document.getElementById('main-avatar').style.borderColor = data.color;
+            document.documentElement.style.setProperty('--current-platform-color', data.color);
+
+            const d = dict[currentLang];
+
+            // HİZMETLER ALANI
+            if(pid === 'hizmetler') {
+                dynamicContent.innerHTML = `
+                    <div class="services-layout">
+                        <div class="platform-head" style="justify-content: center; width: 100%; margin-bottom: 5px;">
+                            <h2 style="color: ${data.color};"><i class="${data.icon}"></i> ${d.servicesTitle}</h2>
+                        </div>
+                        <div class="services-grid">
+                            ${data.pkgs.map(p => `
+                                <div class="service-card" style="border-top: 3px solid ${data.color};">
+                                    <h3>${p.t}</h3>
+                                    <div class="s-time"><i class="far fa-clock"></i> ${p.time}</div>
+                                    <div class="s-price">${p.p}</div>
+                                    <div class="s-desc">${p.d}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="contact-action-box">
+                            <div class="contact-info">
+                                <h4><i class="fas fa-paper-plane" style="color:${data.color}"></i> ${d.contactTitle}</h4>
+                                <p>${d.contactDesc}</p>
+                            </div>
+                            <div class="copy-wrapper">
+                                <span class="copy-email-text">karakayaeyp7@gmail.com</span>
+                                <button class="btn-copy-action" onclick="copyMyEmail(this)">${d.copyBtn}</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            // İSTATİSTİK ALANI
+            const gridCols = data.stats.length === 3 ? 'repeat(3, 1fr)' : '1fr 1fr';
+            
+            let html = `
+                <div class="platform-head">
+                    <h2 style="color: ${data.color};"><i class="${data.icon}"></i> ${data.name} ${d.statsTitle}</h2>
+                    <a href="${data.url}" target="_blank" class="btn-profile-link">
+                        ${d.goToProfile} <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+                
+                <div class="top-stats" style="grid-template-columns: ${gridCols};">
+                    ${data.stats.map(s => `
+                        <div class="stat-card" style="border-top-color: ${data.color}">
+                            <i class="${s.i} stat-icon" style="color: ${data.color}"></i>
+                            <span class="stat-val counter" data-target="${s.v}">0</span>
+                            <span class="stat-lbl">${s.l}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            if(data.demo) {
+                html += `
+                <div class="bottom-analytics">
+                    <div class="analytic-box">
+                        <h3><i class="fas fa-chart-pie" style="color:${data.color}"></i> ${d.ageGender}</h3>
+                        <div class="bars-container">
+                            ${data.demo.gender.map(g => `
+                                <div class="bar-row">
+                                    <span class="bar-label">${g.l}</span>
+                                    <div class="bar-track"><div class="bar-fill" style="width:${g.p}%; background:${data.color}"></div></div>
+                                    <span class="bar-val">%${g.p}</span>
+                                </div>
+                            `).join('')}
+                            <div class="bar-divider"></div>
+                            ${data.demo.age.map(a => `
+                                <div class="bar-row">
+                                    <span class="bar-label">${a.l}</span>
+                                    <div class="bar-track"><div class="bar-fill" style="width:${a.p}%; background:${data.color}"></div></div>
+                                    <span class="bar-val">%${a.p}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="analytic-box" style="padding: 15px 20px;">
+                        <div style="display: flex; flex-direction: column; gap: 15px; flex-grow: 1; min-height: 0;" class="geo-split">
+                            ${data.demo.geoLists.map((gList, index) => `
+                                <div style="display: flex; flex-direction: column; flex: 1; min-height: 0;" class="geo-section">
+                                    <div style="font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; color: var(--text-muted); display: flex; align-items: center; gap: 6px;"><i class="${gList.icon}"></i> ${gList.title}</div>
+                                    <div class="list-container">
+                                        ${gList.items.map((loc, i) => `
+                                            <div class="list-row">
+                                                <span><span class="list-rank" style="background:${data.color}">${i+1}</span> ${loc.n}</span>
+                                                <span style="color:${data.color}; font-weight:800;">${loc.p}</span>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                                ${index !== data.demo.geoLists.length - 1 ? '<div class="bar-divider"></div>' : ''}
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+                `;
+            }
+
+            dynamicContent.innerHTML = html;
+            animateCounters(data.stats);
+        }
+
+        function animateCounters(statsData) {
+            currentIntervals.forEach(clearInterval);
+            currentIntervals = [];
+            const counters = document.querySelectorAll('.counter');
+            
+            counters.forEach((c, index) => {
+                const target = parseFloat(c.getAttribute('data-target'));
+                const suffix = statsData[index].s;
+                const dur = 1000; const steps = 30; const inc = target / steps;
+                let cur = 0;
+                
+                const timer = setInterval(() => {
+                    cur += inc;
+                    if(cur >= target) { 
+                        c.innerText = (target % 1 !== 0) ? target.toString() + suffix : target.toLocaleString('tr-TR') + suffix; 
+                        clearInterval(timer); 
+                    } else { 
+                        c.innerText = (target % 1 !== 0) ? cur.toFixed(1) : Math.ceil(cur).toLocaleString('tr-TR'); 
+                    }
+                }, dur/steps);
+                currentIntervals.push(timer);
+            });
+        }
+
+        function copyMyEmail(btn) {
+            const email = "karakayaeyp7@gmail.com";
+            const textArea = document.createElement("textarea");
+            textArea.value = email;
+            textArea.style.position = "absolute";
+            textArea.style.left = "-9999px";
+            textArea.style.top = "0";
+            textArea.setAttribute("readonly", ""); 
+            
+            document.body.appendChild(textArea);
+            textArea.select();
+            const d = dict[currentLang];
+            
+            try {
+                document.execCommand('copy');
+                btn.style.background = "#10b981"; 
+                btn.innerText = d.copiedBtn;
+                
+                setTimeout(() => {
+                    btn.style.background = "#ff0033"; 
+                    btn.innerText = d.copyBtn;
+                }, 2000);
+            } catch (err) {
+                console.error('Kopyalama hatası:', err);
+            }
+            document.body.removeChild(textArea);
+        }
+
+        // İlk Yükleme
+        updateStaticTexts();
+        initTabs();
+
+        // Güvenlik
+        document.onkeydown = (e) => { 
+            if(e.ctrlKey && (e.keyCode === 67 || e.keyCode === 85 || e.keyCode === 83)) return false; 
+            if(e.keyCode === 123) return false;
+        };
+    </script>
+</body>
+</html>
